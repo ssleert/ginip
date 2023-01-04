@@ -11,7 +11,6 @@ func notAComment(l string) bool {
 		l[0] == ';' {
 		return false
 	}
-
 	return true
 }
 
@@ -53,17 +52,14 @@ func getValue(ini Ini, sec, val string) (string, error) {
 
 	var ss bool
 	for i, line := range ini {
-		if isSection(line) {
+		if ss && isSection(line) {
+			ini = ini[:i]
+		}
+		if !ss && isSection(line) {
 			if line[1:len(line)-1] == sec {
 				ini = ini[i+1:]
 				ss = true
-				break
 			}
-		}
-	}
-	for i, line := range ini {
-		if isSection(line) {
-			ini = ini[:i]
 		}
 	}
 

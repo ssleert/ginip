@@ -8,10 +8,9 @@ import (
 
 func main() {
 	f, _ := ginip.Load("./example/example.ini")
-
 	fmt.Println(f.GetValueString("package1", "name"))
-	fmt.Println(f.GetValueString("package1", "version"))
+	fmt.Println(f.GetValueInt("package1", "version"))
 	fmt.Println(f.GetValueString("package1", "asd"))
 	fmt.Println(f.GetValueString("package2", "name"))
-	fmt.Println(f.GetValueString("package2", "version"))
+	fmt.Println(f.GetValueInt("package2", "version"))
 }
