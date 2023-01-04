@@ -33,11 +33,15 @@ function confirmFile() {
 	
 	for i in {0..1000}; do
 		if [[ "util$(((i * 124891)))" = "$(${utility} ${file} package${i} name)" ]]; then
-			 echo -e "\033[0;31m test complete \033[0m"
+			 echo -e "\033[0;32m test complete \033[0m"
+		else
+			echo -e "\033[0;31m test failed \033[0m"
 		fi
 
 		if [[ "$(((i * 12489)))" = "$(${utility} ${file} package${i} version)" ]]; then
-			echo -e "\033[0;31m test complete \033[0m"
+			echo -e "\033[0;32m test complete \033[0m"
+		else
+			echo -e "\033[0;31m test failed \033[0m"
 		fi
 	done
 }

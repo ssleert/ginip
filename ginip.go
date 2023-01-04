@@ -51,24 +51,21 @@ func getValue(ini Ini, sec, val string) (string, error) {
 	}
 
 	var ss bool
+	var ssl int
 	for i, line := range ini {
-		if isSection(line) {
-			if line[1:len(line)-1] == sec {
-				ini = ini[i+1:]
-				ss = true
-			}
+		if ss && isSection(line) {
+			ini = ini[:i-ssl]
+			break
+		} else if !ss && isSection(line) && line[1:len(line)-1] == sec {
+			ssl = i + 1
+			ini = ini[ssl:]
+			ss = true
 		}
 	}
-	for i, line := range ini {
-		if isSection(line) {
-			ini = ini[:i]
-		}
-	}
-
 	if ss {
 		k, err := findKey(ini, val)
 		return k, err
 	}
 
-	panic("unreachable")
+	return "", errors.New("section doesn't finded")
 }
