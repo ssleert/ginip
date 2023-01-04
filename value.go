@@ -6,25 +6,38 @@ import (
 	"strings"
 )
 
-func parseValueKey(line, val string) string {
-	if strings.ContainsRune(line, '=') {
-		kv := strings.Split(line, "=")
-		kv[0] = strings.TrimSpace(kv[0])
-		if kv[0] == val {
-			kv[1] = strings.TrimSpace(kv[1])
-			return kv[1]
-		}
+func notAComment(l string) bool {
+	if len(l) > 1 &&
+		l[0] == '#' ||
+		l[0] == ';' {
+		return false
 	}
-	return ""
+
+	return true
+}
+
+func isSection(l string) bool {
+	if len(l) > 2 &&
+		l[0] == '[' &&
+		l[len(l)-1] == ']' {
+		return true
+	}
+	return false
 }
 
 func findKey(lines []string, val string) (string, error) {
+	var key string
 	for _, line := range lines {
-		k := parseValueKey(line, val)
-		if k == "" {
+		if strings.ContainsRune(line, '=') && notAComment(line) {
+			kv := strings.Split(line, "=")
+			if strings.TrimSpace(kv[0]) == val {
+				key = strings.TrimSpace(kv[1])
+			}
+		}
+		if key == "" {
 			continue
 		}
-		return k, nil
+		return key, nil
 	}
 	return "", errors.New("value doesn't finded")
 }
@@ -41,14 +54,20 @@ func getValue(ini Ini, sec, val string) (string, error) {
 
 	var ss bool
 	for i, line := range ini {
-		if len(line) > 2 && line[0] == '[' && line[len(line)-1] == ']' {
+		if isSection(line) {
 			if line[1:len(line)-1] == sec {
-				ini = ini[i:]
+				ini = ini[i+1:]
 				ss = true
 				break
 			}
 		}
 	}
+	for i, line := range ini {
+		if isSection(line) {
+			ini = ini[:i]
+		}
+	}
+
 	if ss {
 		k, err := findKey(ini, val)
 		return k, err
@@ -57,8 +76,8 @@ func getValue(ini Ini, sec, val string) (string, error) {
 	panic("unreachable")
 }
 
-func (i Ini) GetValueInt(sec, val string) (int, error) {
-	s, err := getValue(i, sec, val)
+func (i *Ini) GetValueInt(sec, val string) (int, error) {
+	s, err := getValue(*i, sec, val)
 	if err != nil {
 		return 0, err
 	}
@@ -69,13 +88,13 @@ func (i Ini) GetValueInt(sec, val string) (int, error) {
 	return sint, nil
 }
 
-func (i Ini) GetValueString(sec, val string) (string, error) {
-	s, err := getValue(i, sec, val)
+func (i *Ini) GetValueString(sec, val string) (string, error) {
+	s, err := getValue(*i, sec, val)
 	return s, err
 }
 
-func (i Ini) GetValueFloat(sec, val string) (float64, error) {
-	s, err := getValue(i, sec, val)
+func (i *Ini) GetValueFloat(sec, val string) (float64, error) {
+	s, err := getValue(*i, sec, val)
 	if err != nil {
 		return 0, err
 	}
@@ -84,5 +103,4 @@ func (i Ini) GetValueFloat(sec, val string) (float64, error) {
 		return 0, err
 	}
 	return sfloat, nil
-
 }
