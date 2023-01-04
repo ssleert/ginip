@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	f, _ := ginip.Load("./example/test.ini")
+	f, _ := ginip.Load("./example/example.ini")
 
 	fmt.Println(f.GetValueString("package1", "name"))
 	fmt.Println(f.GetValueString("package1", "version"))
