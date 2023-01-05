@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ssleert/ginip"
-	"os"
 	"fmt"
+	"os"
+
+	"github.com/ssleert/ginip"
 )
 
 func main() {
