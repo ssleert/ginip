@@ -32,3 +32,15 @@ func (i *Ini) GetValueFloat(sec, val string) (float64, error) {
 	}
 	return sfloat, nil
 }
+
+func (i *Ini) GetValueBool(sec, val string) (bool, error) {
+	s, err := getValue(*i, sec, val)
+	if err != nil {
+		return false, err
+	}
+	sbool, err := strconv.ParseBool(s)
+	if err != nil {
+		return false, err
+	}
+	return sbool, nil
+}
